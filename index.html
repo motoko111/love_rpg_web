@@ -3,21 +3,39 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1">
+    <!--<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=0.1, maximum-scale=1">
     <title>rpg</title>
 
     <!-- Load custom style sheet -->
+    <link rel="stylesheet" type="text/css" href="theme/reset.css">
     <link rel="stylesheet" type="text/css" href="theme/love.css">
   </head>
   <body>
-    <center>
-      <div>
-        <h1>rpg</h1>
-        <canvas id="loadingCanvas" oncontextmenu="event.preventDefault()" width="800" height="600"></canvas>
-        <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
-      </div>
-    </center>
-
+    <div style="height: 100%; display: flex; flex-direction: column;">
+      <header>
+        <h1 class="center">
+          rpg
+        </h1>
+      </header>
+  
+      <main id="main" style="background-color: rgb(69, 69, 97); color: white;">
+        <div  class="center" style="height: 100%;">
+          <canvas class="center" style="height: 100%;" id="loadingCanvas" oncontextmenu="event.preventDefault()"></canvas>
+          <canvas class="center" style="height: 100%;" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+          <!--<canvas class="center" id="loadingCanvas" ></canvas>-->
+          <!--<canvas class="center" id="canvas" ></canvas>-->
+        </div>
+      </main>
+      
+      <footer>
+        <div>
+          <p>Built with <a href="https://github.com/Davidobot/love.js">love.js</a> <button onclick="goFullScreen();">Go Fullscreen</button><br>Hint: Reload the page if screen is blank</p>
+        </div>
+        </footer>
+  
+    </div>
+    
     <script type='text/javascript'>
       function goFullScreen(){
             var canvas = document.getElementById("canvas");
@@ -30,15 +48,15 @@
       }
       function FullScreenHook(){
         var canvas = document.getElementById("canvas");
-        canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+        canvas.width = screen.width || window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        canvas.height = screen.height || window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
       }
       var loadingContext = document.getElementById('loadingCanvas').getContext('2d');
       function drawLoadingText(text) {
         var canvas = loadingContext.canvas;
 
         loadingContext.fillStyle = "rgb(142, 195, 227)";
-        loadingContext.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight);
+        loadingContext.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight); // 塗りつぶし
 
         loadingContext.font = '2em arial';
         loadingContext.textAlign = 'center'
@@ -47,6 +65,69 @@
 
         loadingContext.fillText("Powered By Emscripten.", canvas.scrollWidth / 2, canvas.scrollHeight / 4);
         loadingContext.fillText("Powered By LÖVE.", canvas.scrollWidth / 2, canvas.scrollHeight / 4 * 3);
+      }
+      /**
+       * 端末の方向を返却する
+       *
+       * @return {object}
+       */
+      function getAngle(){
+        // 角度を取得
+        let angle = screen && screen.orientation && screen.orientation.angle;
+        if ( angle === undefined ) {
+          angle = window.orientation;    // iOS用
+        }
+
+        const isPortrait = (angle === 0);
+        return({
+                value: angle,           // 具体的な角度
+          isPortrait: isPortrait,      // 縦向き
+          isLandscape: ! isPortrait,    // 横向き
+        });
+      }
+      /**
+       * 縦向きか
+       */
+      function isPortrait(){
+        // 角度を取得
+        const angle = getAngle();
+        if( angle.value === undefined ){
+          result.innerHTML = "端末の向きを取得することが出来ませんでした";
+          return(false);
+        }
+
+        // 縦向き
+        if( angle.isPortrait ) {
+        }
+        // 横向き
+        else{
+        }
+      }
+
+      /*
+      画面更新
+      */
+      function updateCanvasSize(){
+        let w = screen.width || window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+        let h = screen.height || window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+        console.log( "window size = (" + w + "," + h + ")")
+
+        // 縦向き
+        if(isPortrait()){
+
+        }
+        // 横向き
+        else{
+
+        }
+
+        var canvas = document.getElementById("canvas");
+        var main = document.getElementById("main");
+        //canvas.width = main.clientWidth
+        //canvas.height = main.clientHeight
+        //canvas.width = canvas.clientWidth;
+        //canvas.height = canvas.clientHeight;
       }
 
       window.onload = function () { window.focus(); };
@@ -58,6 +139,17 @@
           e.preventDefault();
         }
       }, false);
+
+      // 向きが変わる度に呼び出される
+      window.addEventListener("orientationchange", ()=>{
+        updateCanvasSize();
+      });
+      updateCanvasSize();
+
+      // ウィンドウサイズが変わったときに呼ばれる
+      window.addEventListener("resize", ()=>{
+        updateCanvasSize();
+      });
 
       var Module = {
         arguments: ["./game.love"],
@@ -92,6 +184,7 @@
       Module.setStatus('Downloading...');
       window.onerror = function(event) {
         // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+        // TODO: 無限ループやexitStatusをシミュレートするようなokイベントで警告しない
         Module.setStatus('Exception thrown, see JavaScript console');
         Module.setStatus = function(text) {
           if (text) Module.printErr('[post-exception status] ' + text);
@@ -104,8 +197,5 @@
     </script>
     <script type="text/javascript" src="game.js"></script>
     <script async type="text/javascript" src="love.js" onload="applicationLoad(this)"></script>
-    <footer>
-      <p>Built with <a href="https://github.com/Davidobot/love.js">love.js</a> <button onclick="goFullScreen();">Go Fullscreen</button><br>Hint: Reload the page if screen is blank</p>
-    </footer>
   </body>
 </html>

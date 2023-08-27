@@ -8,22 +8,42 @@ h1 {
 }
 
 body {
-    background-image: url(bg.png);
+    /*background-image: url(bg.png);*/
     background-repeat: no-repeat;
     font-family: arial;
     margin: 0;
     padding: none;
-    background-color: rgb( 154, 205, 237 );
-    color: rgb( 28, 78, 104 );
+    background-color: rgb(12, 18, 22);
+    color: rgb(25, 109, 88);
+    height: 100vh;
 }
-
+header {
+    font-family: arial;
+    font-size: 12px;
+    /* padding-left: 10px; */
+    /* position:absolute; */
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 40px;
+    z-index: 999;
+}
+main {
+    width: 100%;
+    height: 40px;
+    flex: auto;
+    /*position: relative;*//*②相対位置*/
+}
 footer {
     font-family: arial;
     font-size: 12px;
     padding-left: 10px;
-    position:absolute;
+    /*position:absolute;*/
     bottom: 0;
     width: 100%;
+    height: 40px;
+    z-index: 999;
+    margin-top: auto;
 }
 
 /* Links */
@@ -42,8 +62,20 @@ a:hover {
 
 /* the canvas *must not* have any border or padding, or mouse coords will be wrong */
 #canvas {
-    padding-right: 0;
+    /*padding-right: 0;*/
     display: block;
     border: 0px none;
     visibility: hidden;
 }
+
+.center {
+    margin-right: auto;
+    margin-left: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+  }
+
+  html, body{
+    -webkit-text-size-adjust: 100%;  /* Safari対策 */
+  }
+
