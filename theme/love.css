@@ -66,13 +66,13 @@ a:hover {
     display: block;
     border: 0px none;
     visibility: hidden;
+    z-index: 900;
+    aspect-ratio: 800/600;
 }
 
 .center {
     margin-right: auto;
     margin-left: auto;
-    margin-top: auto;
-    margin-bottom: auto;
   }
 
   html, body{

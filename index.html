@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <!--<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=0.1, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=0.1, maximum-scale=1, user-scalable=0">
     <title>rpg</title>
 
     <!-- Load custom style sheet -->
@@ -20,9 +20,11 @@
       </header>
   
       <main id="main" style="background-color: rgb(69, 69, 97); color: white;">
-        <div  class="center" style="height: 100%;">
-          <canvas class="center" style="height: 100%;" id="loadingCanvas" oncontextmenu="event.preventDefault()"></canvas>
-          <canvas class="center" style="height: 100%;" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+        <canvas class="center" id="loadingCanvas" oncontextmenu="event.preventDefault()"></canvas>
+        <div id="root_div" class="center" style="width: 100%; height: 100%; display:table; aspect-ratio: 800/600;">
+          <div class="center" style="display:table-cell; vertical-align:middle;">
+            <canvas class="center" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+          </div>
           <!--<canvas class="center" id="loadingCanvas" ></canvas>-->
           <!--<canvas class="center" id="canvas" ></canvas>-->
         </div>
@@ -52,19 +54,26 @@
         canvas.height = screen.height || window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
       }
       var loadingContext = document.getElementById('loadingCanvas').getContext('2d');
+      var canvasContext = document.getElementById('canvas').getContext('webgl');
       function drawLoadingText(text) {
         var canvas = loadingContext.canvas;
+        var root_div = document.getElementById("root_div");
 
-        loadingContext.fillStyle = "rgb(142, 195, 227)";
-        loadingContext.fillRect(0, 0, canvas.scrollWidth, canvas.scrollHeight); // 塗りつぶし
+        var w = root_div.clientWidth;
+        var h = root_div.clientHeight;
+        canvas.width = w
+        canvas.height = h
+
+        loadingContext.fillStyle = "rgb(0, 0, 0)";
+        loadingContext.fillRect(0, 0, w, h); // 塗りつぶし
 
         loadingContext.font = '2em arial';
         loadingContext.textAlign = 'center'
-        loadingContext.fillStyle = "rgb( 11, 86, 117 )";
-        loadingContext.fillText(text, canvas.scrollWidth / 2, canvas.scrollHeight / 2);
+        loadingContext.fillStyle = "rgb( 255, 255, 255 )";
+        loadingContext.fillText(text, w / 2, h / 2);
 
-        loadingContext.fillText("Powered By Emscripten.", canvas.scrollWidth / 2, canvas.scrollHeight / 4);
-        loadingContext.fillText("Powered By LÖVE.", canvas.scrollWidth / 2, canvas.scrollHeight / 4 * 3);
+        loadingContext.fillText("Powered By Emscripten.", w / 2, h / 4);
+        loadingContext.fillText("Powered By LÖVE.", w / 2, h/ 4 * 3);
       }
       /**
        * 端末の方向を返却する
@@ -103,7 +112,34 @@
         else{
         }
       }
-
+      function render(gl, sx, sy) {
+        gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+          
+        // Draw a 1 pixel border around the edge using 
+        // the scissor test since it's easier than setting up
+        // a lot of stuff
+        gl.clearColor(0, 0, 0, 1);  // red
+        gl.disable(gl.SCISSOR_TEST);
+        gl.clear(gl.COLOR_BUFFER_BIT);
+          
+        gl.enable(gl.SCISSOR_TEST);
+        gl.scissor(1, 1, gl.canvas.width, gl.canvas.height);
+        gl.scale(sx,sy);
+        gl.clearColor(0, 0, 1, 1);  // blue
+        gl.clear(gl.COLOR_BUFFER_BIT);
+      };
+      function resizeCanvas(gl) {
+        var width = canvas.clientWidth;
+        var height = canvas.clientHeight;
+        if (canvas.width != width ||
+            canvas.height != height) {
+          canvas.width = width;
+          canvas.height = height;
+                
+          // in this case just render when the window is resized.
+          render(gl);
+        }
+      }
       /*
       画面更新
       */
@@ -124,10 +160,30 @@
 
         var canvas = document.getElementById("canvas");
         var main = document.getElementById("main");
-        //canvas.width = main.clientWidth
-        //canvas.height = main.clientHeight
+        if(canvas.height > main.clientHeight){
+          let rate = 800.0 / 600.0;
+          canvas.height = main.clientHeight
+          canvas.width = canvas.height * rate
+          //canvasContext.scale((main.clientHeight /600.0) * rate , main.clientHeight /600.0)
+          console.log("canvas resize:" + canvas.width + "," + canvas.height + " rate " + rate)
+        }
+        if(600 < main.clientHeight){
+          let rate = 800 / 600;
+          canvas.height = 600
+          canvas.width = canvas.height * rate
+          //canvasContext.scale(1, 1)
+        }
+        //canvas.width = main.scrollWidth
+        //canvas.height = main.scrollHeight
         //canvas.width = canvas.clientWidth;
         //canvas.height = canvas.clientHeight;
+        let rate = 800 / 600;
+        let sx = (main.clientHeight /600.0) * rate
+        let sy = main.clientHeight / 600.0
+        // render(canvasContext, sx, sy)
+        let gl = canvasContext
+        gl.viewport(0, 0, canvas.width, canvas.height);
+        gl.scale(sx,sy);
       }
 
       window.onload = function () { window.focus(); };
@@ -144,7 +200,6 @@
       window.addEventListener("orientationchange", ()=>{
         updateCanvasSize();
       });
-      updateCanvasSize();
 
       // ウィンドウサイズが変わったときに呼ばれる
       window.addEventListener("resize", ()=>{
@@ -171,6 +226,7 @@
           } else if (Module.remainingDependencies === 0) {
             document.getElementById('loadingCanvas').style.display = 'none';
             document.getElementById('canvas').style.visibility = 'visible';
+            updateCanvasSize();
           }
         },
         totalDependencies: 0,
