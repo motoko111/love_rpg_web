@@ -13,7 +13,7 @@
   </head>
   <body>
     <div style="height: 100%; display: flex; flex-direction: column;">
-      <header>
+      <header  id = "header">
         <h1 class="center">
           rpg
         </h1>
@@ -21,14 +21,14 @@
   
       <main id="main" style="background-color: rgb(69, 69, 97); color: white;">
         <canvas class="center" id="loadingCanvas" oncontextmenu="event.preventDefault()"></canvas>
-        <div id="root_div" class="center" style="width: 100%; height: 100%; display:table; aspect-ratio: 800/600;">
+        <div id="root_div" class="center" style="width: 100%; height: 100%; display:table;">
           <div class="center" style="display:table-cell; vertical-align:middle;">
             <canvas class="center" id="canvas" width="800" height="600" oncontextmenu="event.preventDefault()"></canvas>
           </div>
         </div>
       </main>
       
-      <footer>
+      <footer id = "footer">
         <div>
           <p>Built with <a href="https://github.com/Davidobot/love.js">love.js</a> <button onclick="goFullScreen();">Go Fullscreen</button><br>Hint: Reload the page if screen is blank</p>
         </div>
@@ -46,8 +46,15 @@
             else if(canvas.mozRequestFullScreen)
                 canvas.mozRequestFullScreen();
             else{
+              fullScreenElement()
               alert("not supported full screen.")
             }
+      }
+      function fullScreenElement(){
+        var footer = document.getElementById('footer');
+        var header = document.getElementById('header');
+        footer.visibility = false
+        header.visibility = false
       }
       function FullScreenHook(){
         var canvas = document.getElementById("canvas");
