@@ -67,7 +67,6 @@ a:hover {
     border: 0px none;
     visibility: hidden;
     z-index: 900;
-    aspect-ratio: 800/600;
 }
 
 .center {
@@ -79,3 +78,11 @@ a:hover {
     -webkit-text-size-adjust: 100%;  /* Safari対策 */
   }
 
+/* support iOS */
+html{
+height: -webkit-fill-available;
+}
+body{
+min-height: 100vh;
+min-height: -webkit-fill-available;
+}
