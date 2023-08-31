@@ -78,11 +78,7 @@ a:hover {
     -webkit-text-size-adjust: 100%;  /* Safari対策 */
   }
 
-/* support iOS */
-html{
-height: -webkit-fill-available;
-}
-body{
-min-height: 100vh;
-min-height: -webkit-fill-available;
+.fill_screen {
+height: 100vh; /* Fallback */
+height: calc(var(--vh, 1vh) * 100);
 }
