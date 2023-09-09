@@ -141,16 +141,24 @@
         var canvas = document.getElementById("canvas");
         var main = document.getElementById("main");
         let base_rate = 800.0 / 600.0;
+        let height = 0
+        let width = 0
         if((main.clientWidth / main.clientHeight) < base_rate)
         {
-          canvas.style.height = ( main.clientWidth / base_rate) + "px"
-          canvas.style.width = main.clientWidth  + "px"
+          width = main.clientWidth
+          width = parseInt( parseInt(width) / 10 ) * 10
+          height = width / base_rate
         }
         else
         {
-          canvas.style.height = main.clientHeight + "px"
-          canvas.style.width = ( main.clientHeight * base_rate)  + "px"
+          height = main.clientHeight
+          height = parseInt( parseInt(height) / 10 ) * 10
+          width = height * base_rate
         }
+        //width = 800 * 1.5
+        //height = 600 * 1.5
+        canvas.style.height = height + "px"
+        canvas.style.width = width  + "px"
       }
       /*
       高さを保つ
