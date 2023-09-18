@@ -74,8 +74,20 @@ a:hover {
     margin-left: auto;
   }
 
+  html{
+    overflow: hidden;
+  }
   html, body{
     -webkit-text-size-adjust: 100%;  /* Safari対策 */
+  }
+  body{
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
   }
 
 .fill_screen {
