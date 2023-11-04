@@ -66,7 +66,7 @@
         canvas.height = screen.height || window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
       }
       var loadingContext = document.getElementById('loadingCanvas').getContext('2d');
-      var canvasContext = document.getElementById('canvas').getContext('webgl');
+      // var canvasContext = document.getElementById('canvas').getContext('webgl');
       function drawLoadingText(text) {
         var canvas = loadingContext.canvas;
 
@@ -118,10 +118,14 @@
 
         // 縦向き
         if( angle.isPortrait ) {
+          return true;
         }
         // 横向き
         else{
+          return false;
         }
+
+        return false;
       }
       /*
       画面更新
@@ -130,7 +134,6 @@
         let w = screen.width || window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
         let h = screen.height || window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
 
-        console.log( "window size = (" + w + "," + h + ")")
 
         // 縦向き
         if(isPortrait()){
@@ -142,32 +145,48 @@
         }
 
         var root_div = document.getElementById("body_root_div");
-        let innerWidth = window.innerWidth;
-        let innerHeight = window.innerHeight;
+        let innerWidth = window.innerWidth; // スクロール幅を含むウィンドウ内の領域
+        let innerHeight = window.innerHeight; // スクロール幅を含むウィンドウ内の領域
         root_div.style.width = innerWidth + "px"
         root_div.style.height = innerHeight + "px"
 
         var canvas = document.getElementById("canvas");
-        var main = document.getElementById("main");
-        let base_rate = 800.0 / 600.0;
+        var main = document.getElementById("main"); // 実際に描画できる範囲
         let height = 0
         let width = 0
-        if((main.clientWidth / main.clientHeight) < base_rate)
+
+        // 全画面対応
+        if(true)
         {
-          width = main.clientWidth
-          width = parseInt( parseInt(width) / 10 ) * 10
-          height = width / base_rate
+          width = parseInt( parseInt(main.clientWidth - 10) / 10 ) * 10
+          height = parseInt( parseInt(main.clientHeight - 10) / 10 ) * 10
         }
+        // アスペクト比固定
         else
         {
-          height = main.clientHeight
-          height = parseInt( parseInt(height) / 10 ) * 10
-          width = height * base_rate
+          // ベースのアスペクト比
+          let base_rate = 800.0 / 600.0;
+          // アスペクト比が小さい(縦幅が大きい)
+          if((main.clientWidth / main.clientHeight) < base_rate)
+          {
+            width = main.clientWidth
+            width = parseInt( parseInt(width) / 10 ) * 10
+            height = width / base_rate
+          }
+          // アスペクト比が大きい(横幅が大きい)
+          else
+          {
+            height = main.clientHeight
+            height = parseInt( parseInt(height) / 10 ) * 10
+            width = height * base_rate
+          }
         }
-        //width = 800 * 1.5
-        //height = 600 * 1.5
+
+        // webGL canvasの大きさを設定
         canvas.style.height = height + "px"
         canvas.style.width = width  + "px"
+
+        console.log( "window size = (" + w + "," + h + ")" + " canvas size = (" + width + "," + height + ")" + "canvas style = (" + canvas.style.width + "," + canvas.style.height + ")" + " aspect:" + (width/height))
       }
       /*
       高さを保つ
@@ -236,7 +255,7 @@
           Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
         }
       };
-      Module.setStatus('Downloading...');
+      Module.setStatus('Downloading... ');
       window.onerror = function(event) {
         // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
         // TODO: 無限ループやexitStatusをシミュレートするようなokイベントで警告しない

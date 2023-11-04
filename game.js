@@ -1,5 +1,6 @@
 
 var Module;
+var GameDataLoadingProgress = 0;
 
 if (typeof Module === 'undefined') Module = eval('(function() { try { return Module || {} } catch(e) { return {} } })()');
 
@@ -10,6 +11,8 @@ if (!Module.expectedDataFileDownloads) {
 Module.expectedDataFileDownloads++;
 (function() {
  var loadPackage = function(metadata) {
+
+  console.log("[game.js] loadPackage start");
 
   var PACKAGE_PATH;
   if (typeof window === 'object') {
@@ -62,6 +65,7 @@ Module.expectedDataFileDownloads++;
             num++;
           }
           total = Math.ceil(total * Module.expectedDataFileDownloads/num);
+          GameDataLoadingProgress = loaded / total;
           if (Module['setStatus']) Module['setStatus']('Downloading data... (' + loaded + '/' + total + ')');
         } else if (!Module.dataFileDownloads) {
           if (Module['setStatus']) Module['setStatus']('Downloading data...');
@@ -174,7 +178,8 @@ Module.expectedDataFileDownloads++;
         if (!result) {
           return callback(false);
         } else {
-          return callback(PACKAGE_UUID === result.uuid);
+          // return callback(PACKAGE_UUID === result.uuid);
+          return callback(false); // キャッシュ無効化
         }
       };
       getRequest.onerror = function(error) {
@@ -284,6 +289,6 @@ Module.expectedDataFileDownloads++;
     }
 
   }
-  loadPackage({"package_uuid":"22b1bc65-2e93-4a89-a06a-f212081fc32b","remote_package_size":11825774,"files":[{"filename":"/game.love","crunched":0,"start":0,"end":11825774,"audio":false}]});
+  loadPackage({"package_uuid":"dc418866-87fb-4b70-9117-4c0223025516","remote_package_size":11826747,"files":[{"filename":"/game.love","crunched":0,"start":0,"end":11826747,"audio":false}]});
 
 })();
