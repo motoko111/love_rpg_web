@@ -27,7 +27,7 @@
         <canvas class="center" id="loadingCanvas" oncontextmenu="event.preventDefault()"></canvas>
         <div id="root_div" class="center" style="width: 100%; height: 100%; display:table;">
           <div class="center" style="display:table-cell; vertical-align:middle;">
-            <canvas class="center" id="canvas" width="800" height="600" oncontextmenu="event.preventDefault()"></canvas>
+            <canvas class="center" id="canvas" width="100" height="100" oncontextmenu="event.preventDefault()"></canvas>
           </div>
         </div>
       </main>
@@ -50,9 +50,11 @@
             else if(canvas.mozRequestFullScreen)
                 canvas.mozRequestFullScreen();
             else{
-              fullScreenElement()
+              fullScreenElement();
               // alert("not supported full screen.")
             }
+            updateCanvasSize();
+            setFillHeight();
       }
       function fullScreenElement(){
         var footer = document.getElementById('footer');
@@ -158,13 +160,14 @@
         let canvasHeight = 0
         let canvasWidth = 0
 
+
         // 全画面対応
         if(true)
         {
-          canvasWidth = parseInt( parseInt(main.clientWidth - 10) / 10 ) * 10
-          canvasHeight = parseInt( parseInt(main.clientHeight - 10) / 10 ) * 10
-          width = canvasWidth
-          height = canvasHeight
+          width = parseInt( parseInt(main.clientWidth - 10) / 10 ) * 10
+          height = parseInt( parseInt(main.clientHeight - 10) / 10 ) * 10
+          canvasWidth = width
+          canvasHeight = height
         }
         // アスペクト比固定
         else
@@ -190,12 +193,19 @@
         }
 
         // webGL canvasの大きさを設定
-        canvas.style.width = width  + "px"
-        canvas.style.height = height + "px"
         canvas.width = canvasWidth
         canvas.height = canvasHeight
+        canvas.style.width = width  + "px"
+        canvas.style.height = height + "px"
+        
+        // ブラウザがcanvasでCSSピクセルを表示しているサイズを参照し、
+        // デバイスピクセルに合った描画バッファサイズを計算する。
+        var displayWidth  = Math.floor(canvas.clientWidth  * realToCSSPixels);
+        var displayHeight = Math.floor(canvas.clientHeight * realToCSSPixels);
+        //canvas.width = displayWidth
+        //canvas.height = displayHeight
 
-        console.log( "window size = (" + w + "," + h + ")" + " canvas size = (" + width + "," + height + ")" + "canvas style = (" + canvas.style.width + "," + canvas.style.height + ")" + " aspect:" + (width/height))
+        console.log( "window size = (" + w + "," + h + ")" + " canvas size = (" + width + "," + height + ")" + " canvas style = (" + canvas.style.width + "," + canvas.style.height + ")"+ " canvas = (" + canvas.width + "," + canvas.height + ")" + " aspect:" + (width/height))
       }
       /*
       高さを保つ
@@ -210,10 +220,26 @@
 
       window.addEventListener("keydown", function(e) {
         // space and arrow keys
+        // スクロールしてしまうのでキー操作を無効化しているっぽい
         if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
           e.preventDefault();
         }
       }, false);
+
+      // フルスクリーン変更時の処理登録
+      var onFullScreenChanged = (event) => 
+      {
+        console.log("onFullScreenChanged")
+        updateCanvasSize();
+        setFillHeight();
+      };
+      function eventFullScreen(callback){
+        document.addEventListener("fullscreenchange", callback, false);
+        document.addEventListener("webkitfullscreenchange", callback, false);
+        document.addEventListener("mozfullscreenchange", callback, false);
+        document.addEventListener("MSFullscreenChange", callback, false);
+      }
+      eventFullScreen(onFullScreenChanged);
 
       // 向きが変わる度に呼び出される
       window.addEventListener("orientationchange", ()=>{
