@@ -155,18 +155,24 @@
         var main = document.getElementById("main"); // 実際に描画できる範囲
         let height = 0
         let width = 0
+        let canvasHeight = 0
+        let canvasWidth = 0
 
         // 全画面対応
         if(true)
         {
-          width = parseInt( parseInt(main.clientWidth * realToCSSPixels - 10) / 10 ) * 10
-          height = parseInt( parseInt(main.clientHeight * realToCSSPixels - 10) / 10 ) * 10
+          canvasWidth = parseInt( parseInt(main.clientWidth - 10) / 10 ) * 10
+          canvasHeight = parseInt( parseInt(main.clientHeight - 10) / 10 ) * 10
+          width = canvasWidth * realToCSSPixels
+          height = canvasHeight * realToCSSPixels
         }
         // アスペクト比固定
         else
         {
+          canvasWidth = 800
+          canvasHeight = 600
           // ベースのアスペクト比
-          let base_rate = 800.0 / 600.0;
+          let base_rate = canvasWidth / canvasHeight;
           // アスペクト比が小さい(縦幅が大きい)
           if((main.clientWidth / main.clientHeight) < base_rate)
           {
@@ -184,10 +190,10 @@
         }
 
         // webGL canvasの大きさを設定
-        canvas.style.height = height + "px"
         canvas.style.width = width  + "px"
-        //canvas.height = height
-        //canvas.width = width
+        canvas.style.height = height + "px"
+        canvas.width = canvasWidth
+        canvas.height = canvasHeight
 
         console.log( "window size = (" + w + "," + h + ")" + " canvas size = (" + width + "," + height + ")" + "canvas style = (" + canvas.style.width + "," + canvas.style.height + ")" + " aspect:" + (width/height))
       }
