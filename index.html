@@ -149,7 +149,8 @@
         let innerHeight = window.innerHeight; // スクロール幅を含むウィンドウ内の領域
         root_div.style.width = innerWidth + "px"
         root_div.style.height = innerHeight + "px"
-
+        
+        var realToCSSPixels = window.devicePixelRatio;
         var canvas = document.getElementById("canvas");
         var main = document.getElementById("main"); // 実際に描画できる範囲
         let height = 0
@@ -158,8 +159,8 @@
         // 全画面対応
         if(true)
         {
-          width = parseInt( parseInt(main.clientWidth - 10) / 10 ) * 10
-          height = parseInt( parseInt(main.clientHeight - 10) / 10 ) * 10
+          width = parseInt( parseInt(main.clientWidth * realToCSSPixels - 10) / 10 ) * 10
+          height = parseInt( parseInt(main.clientHeight * realToCSSPixels - 10) / 10 ) * 10
         }
         // アスペクト比固定
         else
