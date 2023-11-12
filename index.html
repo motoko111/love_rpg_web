@@ -17,11 +17,13 @@
   </head>
   <body>
     <div class="fill_screen" id="body_root_div" style="height: 100%; display: flex; flex-direction: column;">
+      <!--
       <header  id = "header">
         <h1 class="center">
           rpg
         </h1>
       </header>
+      -->
   
       <main id="main" style="background-color: rgb(18, 17, 20); color: white;">
         <canvas class="center" id="loadingCanvas" oncontextmenu="event.preventDefault()"></canvas>
@@ -32,11 +34,13 @@
         </div>
       </main>
       
+      <!--
       <footer id = "footer">
         <div>
           <p>Built with <a href="https://github.com/Davidobot/love.js">love.js</a> <button onclick="goFullScreen();">Go Fullscreen</button><br>Hint: Reload the page if screen is blank</p>
         </div>
         </footer>
+      -->
   
     </div>
     
@@ -53,14 +57,16 @@
               fullScreenElement();
               // alert("not supported full screen.")
             }
+            // setFillHeight();
             updateCanvasSize();
-            setFillHeight();
       }
       function fullScreenElement(){
+        /*
         var footer = document.getElementById('footer');
         var header = document.getElementById('header');
         footer.style.display = 'none';
         header.style.display = 'none';
+        */
       }
       function FullScreenHook(){
         var canvas = document.getElementById("canvas");
@@ -212,7 +218,7 @@
       */
       const setFillHeight = () => {
         let vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty("--vh", `${vh}px`);
+        // document.documentElement.style.setProperty("--vh", `${vh}px`);
       };
 
       window.onload = function () { window.focus(); };
@@ -230,8 +236,8 @@
       var onFullScreenChanged = (event) => 
       {
         console.log("onFullScreenChanged")
-        updateCanvasSize();
         setFillHeight();
+        updateCanvasSize();
       };
       function eventFullScreen(callback){
         document.addEventListener("fullscreenchange", callback, false);
@@ -243,14 +249,14 @@
 
       // 向きが変わる度に呼び出される
       window.addEventListener("orientationchange", ()=>{
-        updateCanvasSize();
         setFillHeight();
+        updateCanvasSize();
       });
 
       // ウィンドウサイズが変わったときに呼ばれる
       window.addEventListener("resize", ()=>{
-        updateCanvasSize();
         setFillHeight();
+        updateCanvasSize();
       });
       // 画面操作があったときに呼ばれる
       document
@@ -278,8 +284,8 @@
           } else if (Module.remainingDependencies === 0) {
             document.getElementById('loadingCanvas').style.display = 'none';
             document.getElementById('canvas').style.visibility = 'visible';
-            updateCanvasSize();
             setFillHeight();
+            updateCanvasSize();
           }
         },
         totalDependencies: 0,
