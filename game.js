@@ -1,6 +1,7 @@
 
 var Module;
 var GameDataLoadingProgress = 0;
+var ENABLE_USE_CACHE = false
 
 if (typeof Module === 'undefined') Module = eval('(function() { try { return Module || {} } catch(e) { return {} } })()');
 
@@ -178,8 +179,12 @@ Module.expectedDataFileDownloads++;
         if (!result) {
           return callback(false);
         } else {
-          // return callback(PACKAGE_UUID === result.uuid);
-          return callback(false); // キャッシュ無効化
+          if (ENABLE_USE_CACHE){
+            return callback(PACKAGE_UUID === result.uuid);
+          }
+          else{
+            return callback(false); // キャッシュ無効化
+          }
         }
       };
       getRequest.onerror = function(error) {
@@ -289,6 +294,6 @@ Module.expectedDataFileDownloads++;
     }
 
   }
-  loadPackage({"package_uuid":"eaad5ca8-09fb-40b1-b824-9725c2529293","remote_package_size":62186430,"files":[{"filename":"/game.love","crunched":0,"start":0,"end":62186430,"audio":false}]});
+  loadPackage({"package_uuid":"dc194ea6-ca10-43c7-b748-31ef362421ed","remote_package_size":64682303,"files":[{"filename":"/game.love","crunched":0,"start":0,"end":64682303,"audio":false}]});
 
 })();
