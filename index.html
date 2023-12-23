@@ -158,6 +158,7 @@
         root_div.style.width = innerWidth + "px"
         root_div.style.height = innerHeight + "px"
         
+        // Ratinaディスプレイ対応
         var realToCSSPixels = window.devicePixelRatio;
         var canvas = document.getElementById("canvas");
         var main = document.getElementById("main"); // 実際に描画できる範囲
@@ -208,8 +209,8 @@
         // デバイスピクセルに合った描画バッファサイズを計算する。
         var displayWidth  = Math.floor(canvas.clientWidth  * realToCSSPixels);
         var displayHeight = Math.floor(canvas.clientHeight * realToCSSPixels);
-        //canvas.width = displayWidth
-        //canvas.height = displayHeight
+        canvas.width = displayWidth
+        canvas.height = displayHeight
 
         console.log( "window size = (" + w + "," + h + ")" + " canvas size = (" + width + "," + height + ")" + " canvas style = (" + canvas.style.width + "," + canvas.style.height + ")"+ " canvas = (" + canvas.width + "," + canvas.height + ")" + " aspect:" + (width/height))
       }
