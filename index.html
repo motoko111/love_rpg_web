@@ -200,10 +200,10 @@
         }
         // ブラウザがcanvasでCSSピクセルを表示しているサイズを参照し、
         // デバイスピクセルに合った描画バッファサイズを計算する。
-        var displayWidth  = Math.floor(canvasWidth  * realToCSSPixels);
-        var displayHeight = Math.floor(canvasHeight * realToCSSPixels);
-        canvasWidth = displayWidth
-        canvasHeight = displayHeight
+        var displayWidth  = Math.floor(width  * realToCSSPixels);
+        var displayHeight = Math.floor(height * realToCSSPixels);
+        width = displayWidth
+        height = displayHeight
 
         // webGL canvasの大きさを設定
         canvas.width = canvasWidth
