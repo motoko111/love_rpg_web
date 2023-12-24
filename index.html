@@ -198,6 +198,12 @@
             width = height * base_rate
           }
         }
+        // ブラウザがcanvasでCSSピクセルを表示しているサイズを参照し、
+        // デバイスピクセルに合った描画バッファサイズを計算する。
+        var displayWidth  = Math.floor(canvasWidth  * realToCSSPixels);
+        var displayHeight = Math.floor(canvasHeight * realToCSSPixels);
+        canvasWidth = displayWidth
+        canvasHeight = displayHeight
 
         // webGL canvasの大きさを設定
         canvas.width = canvasWidth
@@ -205,12 +211,6 @@
         canvas.style.width = width  + "px"
         canvas.style.height = height + "px"
         
-        // ブラウザがcanvasでCSSピクセルを表示しているサイズを参照し、
-        // デバイスピクセルに合った描画バッファサイズを計算する。
-        var displayWidth  = Math.floor(canvas.clientWidth  * realToCSSPixels);
-        var displayHeight = Math.floor(canvas.clientHeight * realToCSSPixels);
-        canvas.width = displayWidth
-        canvas.height = displayHeight
 
         console.log( "window size = (" + w + "," + h + ")" + " canvas size = (" + width + "," + height + ")" + " canvas style = (" + canvas.style.width + "," + canvas.style.height + ")"+ " canvas = (" + canvas.width + "," + canvas.height + ")" + " aspect:" + (width/height))
       }
