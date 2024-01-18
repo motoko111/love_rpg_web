@@ -1,317 +1,139 @@
 <!doctype html>
 <html lang="en-us">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <!--<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=0.1, maximum-scale=1, user-scalable=0">
-    <!-- ツールバー非表示 iOS用 -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <!-- ツールバー非表示 Android用 -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <title>rpg</title>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, minimum-scale=1, maximum-scale=1">
+        <title>rpg</title>
 
-    <!-- Load custom style sheet -->
-    <link rel="stylesheet" type="text/css" href="theme/reset.css">
-    <link rel="stylesheet" type="text/css" href="theme/love.css">
-  </head>
-  <body>
-    <div class="fill_screen" id="body_root_div" style="height: 100%; display: flex; flex-direction: column;">
-      <!--
-      <header  id = "header">
-        <h1 class="center">
-          rpg
-        </h1>
-      </header>
-      -->
-  
-      <main id="main" style="background-color: rgb(18, 17, 20); color: white;">
-        <canvas class="center" id="loadingCanvas" oncontextmenu="event.preventDefault()"></canvas>
-        <div id="root_div" class="center" style="width: 100%; height: 100%; display:table;">
-          <div class="center" style="display:table-cell; vertical-align:middle;">
-            <canvas class="center" id="canvas" width="100" height="100" oncontextmenu="event.preventDefault()"></canvas>
-          </div>
+        <!-- Load custom style sheet -->
+        <link rel="stylesheet" type="text/css" href="theme/love.css">
+    </head>
+    <body>
+        <div id="container" class="love-desktop">
+            <canvas id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+            <div id='message-container'>
+                <div id='message'>Message</div>
+                <div id='progress-border'><div id='progress-bar'></div></div>
+            </div>
+            <div id="footer">
+                <div id="logo">Powered by <a href="https://github.com/love2d/love">LÖVE</a></div>
+                <div id="fullscreen-button" onclick="goFullScreen();">Fullscreen</div>
+            </div>
         </div>
-      </main>
-      
-      <!--
-      <footer id = "footer">
-        <div>
-          <p>Built with <a href="https://github.com/Davidobot/love.js">love.js</a> <button onclick="goFullScreen();">Go Fullscreen</button><br>Hint: Reload the page if screen is blank</p>
-        </div>
-        </footer>
-      -->
-  
-    </div>
-    
-    <script type='text/javascript'>
-      function goFullScreen(){
-            var canvas = document.getElementById("canvas");
-            if(canvas.requestFullScreen)
-                canvas.requestFullScreen();
-            else if(canvas.webkitRequestFullScreen)
-                canvas.webkitRequestFullScreen();
-            else if(canvas.mozRequestFullScreen)
-                canvas.mozRequestFullScreen();
-            else{
-              fullScreenElement();
-              // alert("not supported full screen.")
+
+        <script type='text/javascript'>
+            var container = document.querySelector("#container");
+            var canvas = document.querySelector("#canvas");
+            var footer = document.querySelector("#footer");
+            var progress_bar = document.querySelector("#progress-bar");
+
+            var complete = false;
+
+            function goFullScreen() {
+                if(canvas.requestFullScreen)
+                    canvas.requestFullScreen();
+                else if(canvas.webkitRequestFullScreen)
+                    canvas.webkitRequestFullScreen();
+                else if(canvas.mozRequestFullScreen)
+                    canvas.mozRequestFullScreen();
             }
-            // setFillHeight();
-            updateCanvasSize();
-      }
-      function fullScreenElement(){
-        /*
-        var footer = document.getElementById('footer');
-        var header = document.getElementById('header');
-        footer.style.display = 'none';
-        header.style.display = 'none';
-        */
-      }
-      function FullScreenHook(){
-        var canvas = document.getElementById("canvas");
-        canvas.width = screen.width || window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        canvas.height = screen.height || window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-      }
-      var loadingContext = document.getElementById('loadingCanvas').getContext('2d');
-      // var canvasContext = document.getElementById('canvas').getContext('webgl');
-      function drawLoadingText(text) {
-        var canvas = loadingContext.canvas;
 
-        var w = document.getElementById('main').clientWidth;
-        var h = document.getElementById('main').clientHeight;
-        canvas.width = w
-        canvas.height = h
+            // function FullScreenHook() {
+            //     var canvas = document.getElementById("canvas");
+            //     canvas.width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+            //     canvas.height = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            // }
 
-        loadingContext.fillStyle = "rgb(0, 0, 0)";
-        loadingContext.fillRect(0, 0, w, h); // 塗りつぶし
+            function drawMessage(text) {
+                message.innerHTML = text;
+            }
 
-        loadingContext.font = '2em arial';
-        loadingContext.textAlign = 'center'
-        loadingContext.fillStyle = "rgb( 255, 255, 255 )";
-        loadingContext.fillText(text, w / 2, h / 2, w);
+            function drawLoadingStatus(text, current_value, total_value) {
+                var ratio = complete ? 1 : 0;
+                if (current_value && total_value) {
+                    ratio = current_value / total_value;
+                }
+                if (ratio >= 1) {
+                    complete = true;
+                }
 
-        loadingContext.fillText("Powered By Emscripten.", w / 2, h / 4, w);
-        loadingContext.fillText("Powered By LÖVE.", w / 2, h/ 4 * 3, w);
-      }
-      /**
-       * 端末の方向を返却する
-       *
-       * @return {object}
-       */
-      function getAngle(){
-        // 角度を取得
-        let angle = screen && screen.orientation && screen.orientation.angle;
-        if ( angle === undefined ) {
-          angle = window.orientation;    // iOS用
-        }
+                progress_bar.style.width = (ratio * 100) + '%';
+                drawMessage(text);
+            }
 
-        const isPortrait = (angle === 0);
-        return({
-                value: angle,           // 具体的な角度
-          isPortrait: isPortrait,      // 縦向き
-          isLandscape: ! isPortrait,    // 横向き
-        });
-      }
-      /**
-       * 縦向きか
-       */
-      function isPortrait(){
-        // 角度を取得
-        const angle = getAngle();
-        if( angle.value === undefined ){
-          result.innerHTML = "端末の向きを取得することが出来ませんでした";
-          return(false);
-        }
+            window.onload = function () { 
+                window.focus();
+            };
+            window.onclick = function () { 
+                window.focus();
+            };
 
-        // 縦向き
-        if( angle.isPortrait ) {
-          return true;
-        }
-        // 横向き
-        else{
-          return false;
-        }
+            window.onerror = function(event) {
+                canvas.remove();
+                // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
+                drawMessage('An error has occurred, see JavaScript console');
+                Module.setStatus = function(text) {
+                    if (text) Module.printErr('[post-exception status] ' + text);
+                };
+            };
 
-        return false;
-      }
-      /*
-      画面更新
-      */
-      function updateCanvasSize(){
-        let w = screen.width || window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-        let h = screen.height || window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+            window.addEventListener("keydown", function(e) {
+                // space and arrow keys
+                if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+                    e.preventDefault();
+                }
+            }, false);
 
+            if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+                footer.className = "love-mobile";
+                container.className = "love-mobile";
 
-        // 縦向き
-        if(isPortrait()){
+                function resize_canvas() {
+                    var innerWidth = window.innerWidth;
+		            var innerHeight = window.innerHeight;
 
-        }
-        // 横向き
-        else{
+                    var width = canvas.width;
+                    var height = canvas.height;
+                    var targetRatio = width / height;
+                    var actualRatio = innerWidth / innerHeight;
 
-        }
+                    var margin_left = "0px";
+                    var margin_top = "0px";
+                
+                    if (innerWidth < width || innerHeight < height) {
+                        if (actualRatio > targetRatio) {
+                            width = innerHeight * targetRatio;
+                            height = innerHeight;
+                            margin_left = ((innerWidth - width) / 2) + "px";
+                        }
+                        else {
+                            width = innerWidth;
+                            height = innerWidth / targetRatio;
+                            margin_top = ((innerHeight - height) / 2) + "px";
+                        }
+                    }
+                    else {
+                        margin_left = ((innerWidth - width) / 2) + "px";
+                        margin_top = ((innerHeight - height) / 2) + "px";
+                    }
 
-        var root_div = document.getElementById("body_root_div");
-        let innerWidth = window.innerWidth; // スクロール幅を含むウィンドウ内の領域
-        let innerHeight = window.innerHeight; // スクロール幅を含むウィンドウ内の領域
-        root_div.style.width = innerWidth + "px"
-        root_div.style.height = innerHeight + "px"
-        
-        // Ratinaディスプレイ対応
-        var realToCSSPixels = window.devicePixelRatio;
-        var canvas = document.getElementById("canvas");
-        var main = document.getElementById("main"); // 実際に描画できる範囲
-        let height = 0
-        let width = 0
-        let canvasHeight = 0
-        let canvasWidth = 0
+                    canvas.style.width = width + "px";
+                    canvas.style.height = height + "px";
 
+                    container.style.width = width + "px";
+		            container.style.height = height + "px";
+                    container.style.marginLeft = margin_left;
+                    container.style.marginTop = margin_top;
+                }
 
-        // 全画面対応
-        if(true)
-        {
-          width = parseInt( parseInt(main.clientWidth - 10) / 10 ) * 10
-          height = parseInt( parseInt(main.clientHeight - 10) / 10 ) * 10
-          canvasWidth = width
-          canvasHeight = height
-        }
-        // アスペクト比固定
-        else
-        {
-          canvasWidth = 800
-          canvasHeight = 600
-          // ベースのアスペクト比
-          let base_rate = canvasWidth / canvasHeight;
-          // アスペクト比が小さい(縦幅が大きい)
-          if((main.clientWidth / main.clientHeight) < base_rate)
-          {
-            width = main.clientWidth
-            width = parseInt( parseInt(width) / 10 ) * 10
-            height = width / base_rate
-          }
-          // アスペクト比が大きい(横幅が大きい)
-          else
-          {
-            height = main.clientHeight
-            height = parseInt( parseInt(height) / 10 ) * 10
-            width = height * base_rate
-          }
-        }
-        // ブラウザがcanvasでCSSピクセルを表示しているサイズを参照し、
-        // デバイスピクセルに合った描画バッファサイズを計算する。
-        canvasWidth = Math.floor(canvasWidth  * realToCSSPixels);
-        canvasHeight = Math.floor(canvasHeight  * realToCSSPixels);
-        width = Math.floor(width  * realToCSSPixels);
-        height = Math.floor(height  * realToCSSPixels);
-
-        // webGL canvasの大きさを設定
-        canvas.width = canvasWidth
-        canvas.height = canvasHeight
-        canvas.style.width = width  + "px"
-        canvas.style.height = height + "px"
-        
-
-        console.log( "window size = (" + w + "," + h + ")" + " canvas size = (" + width + "," + height + ")" + " canvas style = (" + canvas.style.width + "," + canvas.style.height + ")"+ " canvas = (" + canvas.width + "," + canvas.height + ")" + " aspect:" + (width/height))
-      }
-      /*
-      高さを保つ
-      */
-      const setFillHeight = () => {
-        let vh = window.innerHeight * 0.01;
-        // document.documentElement.style.setProperty("--vh", `${vh}px`);
-      };
-
-      window.onload = function () { window.focus(); };
-      window.onclick = function () { window.focus(); };
-
-      window.addEventListener("keydown", function(e) {
-        // space and arrow keys
-        // スクロールしてしまうのでキー操作を無効化しているっぽい
-        if([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-          e.preventDefault();
-        }
-      }, false);
-
-      // フルスクリーン変更時の処理登録
-      var onFullScreenChanged = (event) => 
-      {
-        console.log("onFullScreenChanged")
-        setFillHeight();
-        updateCanvasSize();
-      };
-      function eventFullScreen(callback){
-        document.addEventListener("fullscreenchange", callback, false);
-        document.addEventListener("webkitfullscreenchange", callback, false);
-        document.addEventListener("mozfullscreenchange", callback, false);
-        document.addEventListener("MSFullscreenChange", callback, false);
-      }
-      eventFullScreen(onFullScreenChanged);
-
-      // 向きが変わる度に呼び出される
-      window.addEventListener("orientationchange", ()=>{
-        setFillHeight();
-        updateCanvasSize();
-      });
-
-      // ウィンドウサイズが変わったときに呼ばれる
-      window.addEventListener("resize", ()=>{
-        setFillHeight();
-        updateCanvasSize();
-      });
-      // 画面操作があったときに呼ばれる
-      document
-        .querySelector(".fill_screen")
-        .addEventListener("touchmove", setFillHeight);
-      setFillHeight();
-
-      var Module = {
-        arguments: ["./game.love"],
-        INITIAL_MEMORY: 1000000000,
-        printErr: console.error.bind(console),
-        canvas: (function() {
-          var canvas = document.getElementById('canvas');
-
-          // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-          // application robust, you may want to override this behavior before shipping!
-          // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-          canvas.addEventListener("webglcontextlost", function(e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
-
-          return canvas;
-        })(),
-        setStatus: function(text) {
-          if (text) {
-            drawLoadingText(text);
-          } else if (Module.remainingDependencies === 0) {
-            document.getElementById('loadingCanvas').style.display = 'none';
-            document.getElementById('canvas').style.visibility = 'visible';
-            setFillHeight();
-            updateCanvasSize();
-          }
-        },
-        totalDependencies: 0,
-        remainingDependencies: 0,
-        monitorRunDependencies: function(left) {
-          this.remainingDependencies = left;
-          this.totalDependencies = Math.max(this.totalDependencies, left);
-          Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies-left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
-        }
-      };
-      Module.setStatus('Downloading... ');
-      window.onerror = function(event) {
-        // TODO: do not warn on ok events like simulating an infinite loop or exitStatus
-        // TODO: 無限ループやexitStatusをシミュレートするようなokイベントで警告しない
-        Module.setStatus('Exception thrown, see JavaScript console');
-        Module.setStatus = function(text) {
-          if (text) Module.printErr('[post-exception status] ' + text);
-        };
-      };
-
-      var applicationLoad = function(e) {
-        Love(Module);
-      }
-    </script>
-    <script type="text/javascript" src="game.js"></script>
-    <script async type="text/javascript" src="love.js" onload="applicationLoad(this)"></script>
-  </body>
+                resize_canvas();
+                window.addEventListener('resize', resize_canvas, false);
+                window.addEventListener('orientationchange', resize_canvas, false);
+                window.addEventListener('focus', resize_canvas, false);
+            }
+        </script>
+        <script type="text/javascript" src="game.js"></script>
+        <script async type="text/javascript" src="love.js" onload="applicationLoad(this)"></script>
+    </body>
 </html>
